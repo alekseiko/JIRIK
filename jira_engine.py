@@ -10,6 +10,9 @@ import config
 
 TIME_FORMAT = "%d%m%Y"
 ISSUE_BY_PART_OF_NAME_JQL = "project = {0} AND summary ~ '{1}'" 
+START_DATE_FIELD = "startDate"
+TIME_SPENT_FIELD = TIME_SPENT_FIELD
+COMMENT_FIELD = COMMENT_FIELD
 
 class JiraEngine: 
 
@@ -24,8 +27,9 @@ class JiraEngine:
 		client, auth = self.__initJiraClient()
 
 		dt_today = SOAPpy.dateTimeType(createDate)
-		worklog = {"startDate":dt_today, "timeSpent":timeSpent, \
-				"comment":comment}
+		worklog = {START_DATE_FIELD:dt_today, \
+				TIME_SPENT_FIELD:timeSpent, \
+				COMMENT_FIELD:comment}
 
 		result = client.addWorklogAndAutoAdjustRemainingEstimate(auth, \
 				issue, worklog)
@@ -88,11 +92,11 @@ def main():
 			time.strptime(options.date, TIME_FORMAT)[:6], \
 			options.timeSpent, options.comment)
 
-	print "Worklog is successfully logged on issue:[{0}]".format(issueKey)
+	print "Worklog is successfully logged on issue: [{0}]".format(issueKey)
 
 def parseArgs():
 	parser = OptionParser()
-	parser.add_option("-t", "--time", dest = "timeSpent",\
+	parser.add_option("-t", "--time", dest = TIME_SPENT_FIELD,\
 		help = "timeSpent on issue in jira format 1h, 1d, etc", \
 		type = "string")
 	parser.add_option("-s", "--summary",\
@@ -101,7 +105,7 @@ def parseArgs():
 		help = "Start date in format ddmmYYYY", dest = "date", \
 		type = "string")
 	parser.add_option("-c", "--comment", \
-		help = "Comment for work log", dest = "comment", \
+		help = "Comment for work log", dest = COMMENT_FIELD, \
 		type = "string")
 	parser.add_option("-p", "--project",\
 		help = "Project name", dest = "project", type = "string")
