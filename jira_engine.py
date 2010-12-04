@@ -11,8 +11,8 @@ import config
 TIME_FORMAT = "%d%m%Y"
 ISSUE_BY_PART_OF_NAME_JQL = "project = {0} AND summary ~ '{1}'" 
 START_DATE_FIELD = "startDate"
-TIME_SPENT_FIELD = TIME_SPENT_FIELD
-COMMENT_FIELD = COMMENT_FIELD
+TIME_SPENT_FIELD = "timeSpent"
+COMMENT_FIELD = "comment"
 
 class JiraEngine: 
 
@@ -34,8 +34,6 @@ class JiraEngine:
 		result = client.addWorklogAndAutoAdjustRemainingEstimate(auth, \
 				issue, worklog)
 		
-		print result
-
 	def getIssuesByPartOfName(self, partOfName, project = config.project, \
 				resultCount = config.resultCount):
 
@@ -76,7 +74,12 @@ def main():
 			if (value == 'x'): 
 				return
 
-			value = int(value)
+			try:
+				value = int(value)
+			except ValueError:
+				print "We can type 'x' or number of row\n"
+				continue
+
 			if ((value < len(issues)) and (value >= 0)):
 				number = value
 				break
