@@ -5,11 +5,12 @@ __author__ = "aleksei.kornev@gmail.com (Aleksei Kornev)"
 import SOAPpy
 import time
 from optparse import OptionParser
+from datetime import date
 
 import config
 
 TIME_FORMAT = "%d%m%Y"
-ISSUE_BY_PART_OF_NAME_JQL = "project = {0} AND summary ~ '{1}'" 
+ISSUE_BY_PART_OF_NAME_JQL = "project = {0} AND summary ~ '{1}' AND status != Closed" 
 START_DATE_FIELD = "startDate"
 TIME_SPENT_FIELD = "timeSpent"
 COMMENT_FIELD = "comment"
@@ -61,6 +62,12 @@ def main():
 	else:
 		issues = jira.getIssuesByPartOfName(options.summary, \
 				options.project)
+	
+	createDate = None
+	if options.date is None:
+		createDate = date.today().timetuple()[:6]
+	else:
+		createDate = time.strptime(options.date, TIME_FORMAT)[:6] 
 
 #	If we found more then 1 issue we need to choose right issue
 	number = 0
@@ -92,7 +99,7 @@ def main():
 
 	(issueKey, summary) = issues[number]
 	jira.addWorklogAndAutoAdjustRemainingEstimate(issueKey, \
-			time.strptime(options.date, TIME_FORMAT)[:6], \
+			createDate, \
 			options.timeSpent, options.comment)
 
 	print "Worklog is successfully logged on issue: [{0}]".format(issueKey)
